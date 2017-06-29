@@ -1,7 +1,7 @@
 ------------------------------------------------------------------------------
---                        Bareboard drivers examples                        --
+--                            SPARK Railway Demo                            --
 --                                                                          --
---                     Copyright (C) 2015-2016, AdaCore                     --
+--                     Copyright (C) 2015-2017, AdaCore                     --
 --                                                                          --
 -- This library is free software;  you can redistribute it and/or modify it --
 -- under terms of the  GNU General Public License  as published by the Free --
@@ -22,7 +22,6 @@
 ------------------------------------------------------------------------------
 
 with HAL.Bitmap;        use HAL.Bitmap;
-with Bitmapped_Drawing; use Bitmapped_Drawing;
 
 package body Tracks_Display is
 
@@ -30,14 +29,14 @@ package body Tracks_Display is
 
    Entry_Sign_Pixel : constant array (Entry_Sign_Color) of Bitmap_Color
      := (Green  => HAL.Bitmap.Green,
-         Orange => HAL.Bitmap.Orange,
+         Orange => HAL.Bitmap.Dark_Orange,
          Red    => HAL.Bitmap.Red);
 
    Track_Color      : constant Bitmap_Color := HAL.Bitmap.Light_Grey;
-   Track_Thickness  : constant := 4;
-   Train_Thickness  : constant := 2;
-   Switch_Color     : constant Bitmap_Color := HAL.Bitmap.Violet;
-   Switch_Thickness : constant := 2;
+   Track_Thickness  : constant := 6;
+   Train_Thickness  : constant := 4;
+   Switch_Color     : constant Bitmap_Color := HAL.Bitmap.Dark_Violet;
+   Switch_Thickness : constant := 3;
 
    use type Trains.Train_Id;
 
@@ -45,8 +44,7 @@ package body Tracks_Display is
 
    function Last_Bogie_Track (Train : Displayed_Train) return Trains.Track_Id;
 
-   function As_Display_Point (Input : Point)
-     return Bitmapped_Drawing.Point;
+   function As_Display_Point (Input : Point) return HAL.Bitmap.Point;
 
    function Next_Track (Track : Track_Access) return Track_Access;
 
@@ -314,16 +312,14 @@ package body Tracks_Display is
    -- Draw_Sign --
    ---------------
 
-   procedure Draw_Sign (Buffer : HAL.Bitmap.Bitmap_Buffer'Class;
+   procedure Draw_Sign (Buffer : in out HAL.Bitmap.Bitmap_Buffer'Class;
                         Track  : Displayed_Track) is
    begin
       if (Track.Entry_Sign.Coord /= (0, 0)) then
          if not Track.Entry_Sign.Disabled then
-            Fill_Circle
-              (Buffer,
-               As_Display_Point (Track.Entry_Sign.Coord),
-               Entry_Sign_Size / 2,
-               Entry_Sign_Pixel (Track.Entry_Sign.Color));
+            Buffer.Set_Source (Entry_Sign_Pixel (Track.Entry_Sign.Color));
+            Buffer.Fill_Circle (As_Display_Point (Track.Entry_Sign.Coord),
+                                Entry_Sign_Size / 2);
          end if;
       end if;
    end Draw_Sign;
@@ -332,25 +328,21 @@ package body Tracks_Display is
    -- Draw_Track --
    ----------------
 
-   procedure Draw_Track (Buffer : HAL.Bitmap.Bitmap_Buffer'Class;
+   procedure Draw_Track (Buffer : in out HAL.Bitmap.Bitmap_Buffer'Class;
                          Track  : Displayed_Track)
    is
    begin
+      Buffer.Set_Source (Track_Color);
       if Track.Is_Straight then
-         Draw_Line
-           (Buffer,
-            As_Display_Point (Track.Points (Track.Points'First)),
-            As_Display_Point (Track.Points (Track.Points'Last)),
-            Track_Color,
-            Track_Thickness);
+         Buffer.Set_Source (Track_Color);
+         Buffer.Draw_Line (As_Display_Point (Track.Points (Track.Points'First)),
+                           As_Display_Point (Track.Points (Track.Points'Last)),
+                           Track_Thickness);
       else
          for Index in Track.Points'First .. Track.Points'Last - 1 loop
-            Draw_Line
-              (Buffer,
-               As_Display_Point (Track.Points (Index)),
-               As_Display_Point (Track.Points (Index + 1)),
-               Track_Color,
-               Track_Thickness);
+            Buffer.Draw_Line (As_Display_Point (Track.Points (Index)),
+                              As_Display_Point (Track.Points (Index + 1)),
+                              Track_Thickness);
          end loop;
       end if;
 
@@ -361,22 +353,20 @@ package body Tracks_Display is
    -- Draw_Switch --
    -----------------
 
-   procedure Draw_Switch (Buffer : HAL.Bitmap.Bitmap_Buffer'Class;
+   procedure Draw_Switch (Buffer : in out HAL.Bitmap.Bitmap_Buffer'Class;
                           Track  : Displayed_Track) is
       Target : constant Track_Access := Track.Exits (Track.Switch_State);
    begin
       if Track.Switchable then
+         Buffer.Set_Source (Switch_Color);
          for Cnt in Target.Points'First .. Target.Points'First + 10 loop
             declare
                P1 : constant Point := Target.all.Points (Cnt);
                P2 : constant Point := Target.all.Points (Cnt + 1);
             begin
-               Draw_Line
-                 (Buffer,
-                  As_Display_Point (P1),
-                  As_Display_Point (P2),
-                  Switch_Color,
-                  Switch_Thickness);
+               Buffer.Draw_Line (As_Display_Point (P1),
+                                 As_Display_Point (P2),
+                                 Switch_Thickness);
             end;
          end loop;
       end if;
@@ -386,7 +376,7 @@ package body Tracks_Display is
    -- Draw_Train --
    ----------------
 
-   procedure Draw_Train (Buffer : HAL.Bitmap.Bitmap_Buffer'Class;
+   procedure Draw_Train (Buffer : in out HAL.Bitmap.Bitmap_Buffer'Class;
                          Train  : Displayed_Train)
    is
       Train_Color : Bitmap_Color;
@@ -410,12 +400,10 @@ package body Tracks_Display is
                   Train_Color := HAL.Bitmap.Black;
             end case;
 
-            Draw_Line
-              (Buffer,
-               As_Display_Point (P1),
-               As_Display_Point (P2),
-               Train_Color,
-               Train_Thickness);
+            Buffer.Set_Source (Train_Color);
+            Buffer.Draw_Line (As_Display_Point (P1),
+                              As_Display_Point (P2),
+                              Train_Thickness);
          end;
       end loop;
    end Draw_Train;
@@ -513,7 +501,7 @@ package body Tracks_Display is
    -- As_Display_Point --
    ----------------------
 
-   function As_Display_Point (Input : Point) return Bitmapped_Drawing.Point
+   function As_Display_Point (Input : Point) return HAL.Bitmap.Point
    is (Input.X, Input.Y);
 
 end Tracks_Display;

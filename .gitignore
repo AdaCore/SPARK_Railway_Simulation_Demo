@@ -6,3 +6,5 @@
 
 *-loc.xml
 *.db
+
+obj/

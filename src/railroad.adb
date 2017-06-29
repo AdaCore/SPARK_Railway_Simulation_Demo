@@ -1,7 +1,7 @@
 ------------------------------------------------------------------------------
 --                            SPARK Railway Demo                            --
 --                                                                          --
---                     Copyright (C) 2015-2016, AdaCore                     --
+--                     Copyright (C) 2015-2017, AdaCore                     --
 --                                                                          --
 -- This library is free software;  you can redistribute it and/or modify it --
 -- under terms of the  GNU General Public License  as published by the Free --
@@ -22,7 +22,6 @@
 ------------------------------------------------------------------------------
 
 with STM32.Board;      use STM32.Board;
-with HAL.Bitmap;       use HAL.Bitmap;
 
 with Tracks_Display;   use Tracks_Display;
 with Bitmapped_Drawing;
@@ -477,7 +476,7 @@ package body Railroad is
    -----------------
 
    procedure Draw_Layout
-     (Buffer : HAL.Bitmap.Bitmap_Buffer'Class;
+     (Buffer : in out HAL.Bitmap.Bitmap_Buffer'Class;
       Init   : Boolean := False)
    is
    begin
@@ -500,24 +499,22 @@ package body Railroad is
          end loop;
 
          --  Draw touch areas
+         Buffer.Set_Source (HAL.Bitmap.White);
          Buffer.Draw_Rect
-           (Color  => HAL.Bitmap.White,
-            X      => Sw1_X'First,
-            Y      => Sw1_Y'First,
+           (((X      => Sw1_X'First,
+              Y      => Sw1_Y'First),
             Width  => Sw1_X'Last - Sw1_X'First + 1,
-            Height => Sw1_Y'Last - Sw1_Y'First + 1);
+            Height => Sw1_Y'Last - Sw1_Y'First + 1));
          Buffer.Draw_Rect
-           (Color  => HAL.Bitmap.White,
-            X      => Sw2_X'First,
-            Y      => Sw2_Y'First,
+           (((X      => Sw2_X'First,
+              Y      => Sw2_Y'First),
             Width  => Sw2_X'Last - Sw2_X'First + 1,
-            Height => Sw2_Y'Last - Sw2_Y'First + 1);
+            Height => Sw2_Y'Last - Sw2_Y'First + 1));
          Buffer.Draw_Rect
-           (Color  => HAL.Bitmap.White,
-            X      => Sw3_X'First,
-            Y      => Sw3_Y'First,
+           (((X      => Sw3_X'First,
+              Y      => Sw3_Y'First),
             Width  => Sw3_X'Last - Sw3_X'First + 1,
-            Height => Sw3_Y'Last - Sw3_Y'First + 1);
+            Height => Sw3_Y'Last - Sw3_Y'First + 1));
 
       else
          --  Tracks
@@ -550,12 +547,12 @@ package body Railroad is
          end loop;
 
          if Can_Spawn_Train then
+            Buffer.Set_Source (HAL.Bitmap.White);
             Buffer.Draw_Rect
-              (Color  => HAL.Bitmap.White,
-               X      => Spawn_X'First,
-               Y      => Spawn_Y'First,
+              (((X      => Spawn_X'First,
+                 Y      => Spawn_Y'First),
                Width  => Spawn_X'Last - Spawn_X'First + 1,
-               Height => Spawn_Y'Last - Spawn_Y'First + 1);
+               Height => Spawn_Y'Last - Spawn_Y'First + 1));
             Bitmapped_Drawing.Draw_String
               (Buffer,
                Start      => (Spawn_X'First + 5, Spawn_Y'First + 5),
@@ -669,7 +666,7 @@ package body Railroad is
       Create_Inner_Loop;
       Create_Connection_Tracks;
       Convert_Railway_Map;
-      Draw_Layout (Display.Get_Hidden_Buffer (1), True);
+      Draw_Layout (Display.Hidden_Buffer (1).all, True);
       Display.Update_Layer (1);
    end Initialize;
 

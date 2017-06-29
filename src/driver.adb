@@ -1,7 +1,7 @@
 ------------------------------------------------------------------------------
 --                            SPARK Railway Demo                            --
 --                                                                          --
---                     Copyright (C) 2015-2016, AdaCore                     --
+--                     Copyright (C) 2015-2017, AdaCore                     --
 --                                                                          --
 -- This library is free software;  you can redistribute it and/or modify it --
 -- under terms of the  GNU General Public License  as published by the Free --
@@ -37,7 +37,7 @@ package body Driver is
    ----------------
 
    task body Controller is
-      Period : constant Time_Span := Milliseconds (60);
+      Period : constant Time_Span := Milliseconds (90);
       --  arbitrary, but directly affects how fast the trains move
       --  and how quickly the screen responds to touch
 
@@ -68,8 +68,9 @@ package body Driver is
          end if;
 
          Railroad.Step_Simulation;
-         Display.Get_Hidden_Buffer (2).Fill (0);
-         Railroad.Draw_Layout (Display.Get_Hidden_Buffer (2));
+         Display.Hidden_Buffer (2).Set_Source (0);
+         Display.Hidden_Buffer (2).Fill;
+         Railroad.Draw_Layout (Display.Hidden_Buffer (2).all);
          Display.Update_Layer (2);
 
          Next_Start := Next_Start + Period;

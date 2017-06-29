@@ -1,7 +1,7 @@
 ------------------------------------------------------------------------------
 --                            SPARK Railway Demo                            --
 --                                                                          --
---                     Copyright (C) 2015-2016, AdaCore                     --
+--                     Copyright (C) 2015-2017, AdaCore                     --
 --                                                                          --
 -- This library is free software;  you can redistribute it and/or modify it --
 -- under terms of the  GNU General Public License  as published by the Free --
@@ -102,13 +102,13 @@ package Tracks_Display is
 
    procedure Change_Switch (Track  : in out Displayed_Track);
 
-   procedure Draw_Track (Buffer : HAL.Bitmap.Bitmap_Buffer'Class;
+   procedure Draw_Track (Buffer : in out HAL.Bitmap.Bitmap_Buffer'Class;
                          Track  : Displayed_Track);
 
-   procedure Draw_Sign (Buffer : HAL.Bitmap.Bitmap_Buffer'Class;
+   procedure Draw_Sign (Buffer : in out HAL.Bitmap.Bitmap_Buffer'Class;
                         Track  : Displayed_Track);
 
-   procedure Draw_Switch (Buffer : HAL.Bitmap.Bitmap_Buffer'Class;
+   procedure Draw_Switch (Buffer : in out HAL.Bitmap.Bitmap_Buffer'Class;
                           Track  : Displayed_Track);
 
    procedure Init_Train (Train  : in out Displayed_Train;
@@ -116,7 +116,7 @@ package Tracks_Display is
 
    procedure Move_Train (Train : in out Displayed_Train);
 
-   procedure Draw_Train (Buffer : HAL.Bitmap.Bitmap_Buffer'Class;
+   procedure Draw_Train (Buffer : in out HAL.Bitmap.Bitmap_Buffer'Class;
                          Train  : Displayed_Train);
 
    function Location (This : Bogie) return Point;

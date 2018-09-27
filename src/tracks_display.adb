@@ -315,7 +315,7 @@ package body Tracks_Display is
    procedure Draw_Sign (Buffer : in out HAL.Bitmap.Bitmap_Buffer'Class;
                         Track  : Displayed_Track) is
    begin
-      if (Track.Entry_Sign.Coord /= (0, 0)) then
+      if Track.Entry_Sign.Coord /= (0, 0) then
          if not Track.Entry_Sign.Disabled then
             Buffer.Set_Source (Entry_Sign_Pixel (Track.Entry_Sign.Color));
             Buffer.Fill_Circle (As_Display_Point (Track.Entry_Sign.Coord),
@@ -334,7 +334,6 @@ package body Tracks_Display is
    begin
       Buffer.Set_Source (Track_Color);
       if Track.Is_Straight then
-         Buffer.Set_Source (Track_Color);
          Buffer.Draw_Line (As_Display_Point (Track.Points (Track.Points'First)),
                            As_Display_Point (Track.Points (Track.Points'Last)),
                            Track_Thickness);

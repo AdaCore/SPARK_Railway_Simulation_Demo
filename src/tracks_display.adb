@@ -26,7 +26,6 @@ with Display_Options;
 
 package body Tracks_Display is
 
-
    Entry_Sign_Pixel : constant array (Entry_Sign_Color) of Bitmap_Color
      := (Green  => HAL.Bitmap.Green,
          Orange => HAL.Bitmap.Dark_Orange,
@@ -38,8 +37,6 @@ package body Tracks_Display is
    Train_Thickness  : constant := Display_Options.Train_Thickness;
    Switch_Color     : constant Bitmap_Color := HAL.Bitmap.Dark_Violet;
    Switch_Thickness : constant := Display_Options.Switch_Thickness;
-
---     use type Trains.Train_Id;
 
    function First_Bogie_Track (Train : Displayed_Train) return Trains.Track_Id;
 
@@ -98,13 +95,14 @@ package body Tracks_Display is
             D : constant Float := T**3;
          begin
             Track.Points (I).X := Natural (A * Float (P1.X) +
-                                             B * Float (P2.X) +
-                                             C * Float (P3.X) +
-                                             D * Float (P4.X));
+                                           B * Float (P2.X) +
+                                           C * Float (P3.X) +
+                                           D * Float (P4.X));
+
             Track.Points (I).Y := Natural (A * Float (P1.Y) +
-                                             B * Float (P2.Y) +
-                                             C * Float (P3.Y) +
-                                             D * Float (P4.Y));
+                                           B * Float (P2.Y) +
+                                           C * Float (P3.Y) +
+                                           D * Float (P4.Y));
          end;
       end loop;
       Track.Is_Straight := False;
@@ -276,17 +274,6 @@ package body Tracks_Display is
                       Sign_Command);
 
          if Sign_Command /= Trains.Stop then
-            --  Redraw the track under the last bogie. This is an optimisation
-            --  to avoid redrawing all tracks at each loop.
---              Draw_Line
---                (FB_Display.Get_Hidden_Buffer (1),
---                 As_Display_Point
---                   (Location (Train.Bogies (Train.Bogies'Last))),
---                 As_Display_Point
---                   (Location (Train.Bogies (Train.Bogies'Last - 1))),
---                 Track_Color,
---                 Track_Thickness);
-
             --  This move is ilegal, set train to the new position
             Train := Train_Copy;
          end if;
@@ -440,10 +427,6 @@ package body Tracks_Display is
          Track.Exits (S2).Entry_Sign.Disabled := True;
          Track.Exits (S1).Entry_Sign.Disabled := False;
       end if;
-
---        Draw_Track (Track.Exits (S1).all);
---        Draw_Track (Track.Exits (S2).all);
---        Draw_Track (Track);
    end Change_Switch;
 
    --------------

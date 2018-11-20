@@ -1,7 +1,7 @@
 ------------------------------------------------------------------------------
 --                            SPARK Railway Demo                            --
 --                                                                          --
---                     Copyright (C) 2015-2017, AdaCore                     --
+--                     Copyright (C) 2015-2018, AdaCore                     --
 --                                                                          --
 -- This library is free software;  you can redistribute it and/or modify it --
 -- under terms of the  GNU General Public License  as published by the Free --
@@ -26,11 +26,12 @@ with STM32.Board;      use STM32.Board;
 with Tracks_Display;   use Tracks_Display;
 with Bitmapped_Drawing;
 with Trains;           use Trains;
-with BMP_Fonts;        use BMP_Fonts;
+
+with Display_Options;
 
 package body Railroad is
 
-   Block_Size : constant := 40; --  Pixels
+   Block_Size : constant := Display_Options.Railroad_Block_Size; --  Pixels
 
    --  Touch Areas
    subtype Spawn_X is Natural range
@@ -481,6 +482,9 @@ package body Railroad is
    is
    begin
       if Init then
+         --  Init layout is always the same during the entire program. It is
+         --  drawn on the lower layer.
+
          --  Tracks
          for Track of Straight_Tracks loop
             Draw_Track (Buffer, Track);
@@ -516,6 +520,28 @@ package body Railroad is
             Width  => Sw3_X'Last - Sw3_X'First + 1,
             Height => Sw3_Y'Last - Sw3_Y'First + 1));
 
+         Buffer.Set_Source (HAL.Bitmap.White);
+         Buffer.Draw_Rect
+           (((X      => Spawn_X'First,
+              Y      => Spawn_Y'First),
+            Width  => Spawn_X'Last - Spawn_X'First + 1,
+            Height => Spawn_Y'Last - Spawn_Y'First + 1));
+         Bitmapped_Drawing.Draw_String
+           (Buffer,
+            Start      => (Spawn_X'First + 5 + Display_Options.Text_X_Offset,
+                           Spawn_Y'First + 5 + Display_Options.Text_Y_Offset),
+            Msg        => "Touch here to",
+            Font       => Display_Options.Text_Font,
+            Foreground => HAL.Bitmap.White,
+            Background => HAL.Bitmap.Transparent);
+         Bitmapped_Drawing.Draw_String
+           (Buffer,
+            Start      => (Spawn_X'First + 5 + Display_Options.Text_X_Offset,
+                           Spawn_Y'First + 22 + Display_Options.Text_Y_Offset),
+            Msg        => "spawn a train",
+            Font       => Display_Options.Text_Font,
+            Foreground => HAL.Bitmap.White,
+            Background => HAL.Bitmap.Transparent);
       else
          --  Tracks
          for Track of Straight_Tracks loop
@@ -546,28 +572,18 @@ package body Railroad is
             Draw_Train (Buffer, My_Trains (Index));
          end loop;
 
+         --  Mask or unmask the text of the lower layer
          if Can_Spawn_Train then
-            Buffer.Set_Source (HAL.Bitmap.White);
-            Buffer.Draw_Rect
-              (((X      => Spawn_X'First,
-                 Y      => Spawn_Y'First),
-               Width  => Spawn_X'Last - Spawn_X'First + 1,
-               Height => Spawn_Y'Last - Spawn_Y'First + 1));
-            Bitmapped_Drawing.Draw_String
-              (Buffer,
-               Start      => (Spawn_X'First + 5, Spawn_Y'First + 5),
-               Msg        => "Touch here to",
-               Font       => Font8x8,
-               Foreground => HAL.Bitmap.White,
-               Background => HAL.Bitmap.Transparent);
-            Bitmapped_Drawing.Draw_String
-              (Buffer,
-               Start      => (Spawn_X'First + 5, Spawn_Y'First + 22),
-               Msg        => "spawn a train",
-               Font       => Font8x8,
-               Foreground => HAL.Bitmap.White,
-               Background => HAL.Bitmap.Transparent);
+            Buffer.Set_Source (HAL.Bitmap.Transparent);
+         else
+            Buffer.Set_Source (HAL.Bitmap.Black);
          end if;
+
+         Buffer.Fill_Rect
+           (((X      => Spawn_X'First,
+              Y      => Spawn_Y'First),
+            Width  => Spawn_X'Last - Spawn_X'First + 1,
+            Height => Spawn_Y'Last - Spawn_Y'First + 1));
       end if;
    end Draw_Layout;
 

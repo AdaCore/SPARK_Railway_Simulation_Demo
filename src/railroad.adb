@@ -482,6 +482,9 @@ package body Railroad is
    is
    begin
       if Init then
+         --  Init layout is always the same during the entire program. It is
+         --  drawn on the lower layer.
+
          --  Tracks
          for Track of Straight_Tracks loop
             Draw_Track (Buffer, Track);
@@ -517,6 +520,28 @@ package body Railroad is
             Width  => Sw3_X'Last - Sw3_X'First + 1,
             Height => Sw3_Y'Last - Sw3_Y'First + 1));
 
+         Buffer.Set_Source (HAL.Bitmap.White);
+         Buffer.Draw_Rect
+           (((X      => Spawn_X'First,
+              Y      => Spawn_Y'First),
+            Width  => Spawn_X'Last - Spawn_X'First + 1,
+            Height => Spawn_Y'Last - Spawn_Y'First + 1));
+         Bitmapped_Drawing.Draw_String
+           (Buffer,
+            Start      => (Spawn_X'First + 5 + Display_Options.Text_X_Offset,
+                           Spawn_Y'First + 5 + Display_Options.Text_Y_Offset),
+            Msg        => "Touch here to",
+            Font       => Display_Options.Text_Font,
+            Foreground => HAL.Bitmap.White,
+            Background => HAL.Bitmap.Transparent);
+         Bitmapped_Drawing.Draw_String
+           (Buffer,
+            Start      => (Spawn_X'First + 5 + Display_Options.Text_X_Offset,
+                           Spawn_Y'First + 22 + Display_Options.Text_Y_Offset),
+            Msg        => "spawn a train",
+            Font       => Display_Options.Text_Font,
+            Foreground => HAL.Bitmap.White,
+            Background => HAL.Bitmap.Transparent);
       else
          --  Tracks
          for Track of Straight_Tracks loop
@@ -547,30 +572,18 @@ package body Railroad is
             Draw_Train (Buffer, My_Trains (Index));
          end loop;
 
+         --  Mask or unmask the text of the lower layer
          if Can_Spawn_Train then
-            Buffer.Set_Source (HAL.Bitmap.White);
-            Buffer.Draw_Rect
-              (((X      => Spawn_X'First,
-                 Y      => Spawn_Y'First),
-               Width  => Spawn_X'Last - Spawn_X'First + 1,
-               Height => Spawn_Y'Last - Spawn_Y'First + 1));
-            Bitmapped_Drawing.Draw_String
-              (Buffer,
-               Start      => (Spawn_X'First + 5 + Display_Options.Text_X_Offset,
-                              Spawn_Y'First + 5 + Display_Options.Text_Y_Offset),
-               Msg        => "Touch here to",
-               Font       => Display_Options.Text_Font,
-               Foreground => HAL.Bitmap.White,
-               Background => HAL.Bitmap.Transparent);
-            Bitmapped_Drawing.Draw_String
-              (Buffer,
-               Start      => (Spawn_X'First + 5 + Display_Options.Text_X_Offset,
-                              Spawn_Y'First + 22 + Display_Options.Text_Y_Offset),
-               Msg        => "spawn a train",
-               Font       => Display_Options.Text_Font,
-               Foreground => HAL.Bitmap.White,
-               Background => HAL.Bitmap.Transparent);
+            Buffer.Set_Source (HAL.Bitmap.Transparent);
+         else
+            Buffer.Set_Source (HAL.Bitmap.Black);
          end if;
+
+         Buffer.Fill_Rect
+           (((X      => Spawn_X'First,
+              Y      => Spawn_Y'First),
+            Width  => Spawn_X'Last - Spawn_X'First + 1,
+            Height => Spawn_Y'Last - Spawn_Y'First + 1));
       end if;
    end Draw_Layout;
 

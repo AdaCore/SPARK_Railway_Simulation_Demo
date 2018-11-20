@@ -21,24 +21,25 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with HAL.Bitmap;        use HAL.Bitmap;
+with HAL.Bitmap;      use HAL.Bitmap;
+with Display_Options;
 
 package body Tracks_Display is
 
-   Entry_Sign_Size : constant := 6;
 
    Entry_Sign_Pixel : constant array (Entry_Sign_Color) of Bitmap_Color
      := (Green  => HAL.Bitmap.Green,
          Orange => HAL.Bitmap.Dark_Orange,
          Red    => HAL.Bitmap.Red);
 
+   Entry_Sign_Size  : constant := Display_Options.Entry_Sign_Size;
    Track_Color      : constant Bitmap_Color := HAL.Bitmap.Light_Grey;
-   Track_Thickness  : constant := 6;
-   Train_Thickness  : constant := 4;
+   Track_Thickness  : constant := Display_Options.Track_Thickness;
+   Train_Thickness  : constant := Display_Options.Train_Thickness;
    Switch_Color     : constant Bitmap_Color := HAL.Bitmap.Dark_Violet;
-   Switch_Thickness : constant := 3;
+   Switch_Thickness : constant := Display_Options.Switch_Thickness;
 
-   use type Trains.Train_Id;
+--     use type Trains.Train_Id;
 
    function First_Bogie_Track (Train : Displayed_Train) return Trains.Track_Id;
 

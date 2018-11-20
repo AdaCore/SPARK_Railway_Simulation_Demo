@@ -1,7 +1,7 @@
 ------------------------------------------------------------------------------
 --                            SPARK Railway Demo                            --
 --                                                                          --
---                     Copyright (C) 2015-2017, AdaCore                     --
+--                     Copyright (C) 2015-2018, AdaCore                     --
 --                                                                          --
 -- This library is free software;  you can redistribute it and/or modify it --
 -- under terms of the  GNU General Public License  as published by the Free --
@@ -37,7 +37,7 @@ package body Driver is
    ----------------
 
    task body Controller is
-      Period : constant Time_Span := Milliseconds (90);
+      Period : constant Time_Span := Milliseconds (60);
       --  arbitrary, but directly affects how fast the trains move
       --  and how quickly the screen responds to touch
 

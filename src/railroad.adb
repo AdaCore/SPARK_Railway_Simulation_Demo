@@ -1,7 +1,7 @@
 ------------------------------------------------------------------------------
 --                            SPARK Railway Demo                            --
 --                                                                          --
---                     Copyright (C) 2015-2017, AdaCore                     --
+--                     Copyright (C) 2015-2018, AdaCore                     --
 --                                                                          --
 -- This library is free software;  you can redistribute it and/or modify it --
 -- under terms of the  GNU General Public License  as published by the Free --
@@ -26,11 +26,12 @@ with STM32.Board;      use STM32.Board;
 with Tracks_Display;   use Tracks_Display;
 with Bitmapped_Drawing;
 with Trains;           use Trains;
-with BMP_Fonts;        use BMP_Fonts;
+
+with Display_Options;
 
 package body Railroad is
 
-   Block_Size : constant := 40; --  Pixels
+   Block_Size : constant := Display_Options.Railroad_Block_Size; --  Pixels
 
    --  Touch Areas
    subtype Spawn_X is Natural range
@@ -555,16 +556,18 @@ package body Railroad is
                Height => Spawn_Y'Last - Spawn_Y'First + 1));
             Bitmapped_Drawing.Draw_String
               (Buffer,
-               Start      => (Spawn_X'First + 5, Spawn_Y'First + 5),
+               Start      => (Spawn_X'First + 5 + Display_Options.Text_X_Offset,
+                              Spawn_Y'First + 5 + Display_Options.Text_Y_Offset),
                Msg        => "Touch here to",
-               Font       => Font8x8,
+               Font       => Display_Options.Text_Font,
                Foreground => HAL.Bitmap.White,
                Background => HAL.Bitmap.Transparent);
             Bitmapped_Drawing.Draw_String
               (Buffer,
-               Start      => (Spawn_X'First + 5, Spawn_Y'First + 22),
+               Start      => (Spawn_X'First + 5 + Display_Options.Text_X_Offset,
+                              Spawn_Y'First + 22 + Display_Options.Text_Y_Offset),
                Msg        => "spawn a train",
-               Font       => Font8x8,
+               Font       => Display_Options.Text_Font,
                Foreground => HAL.Bitmap.White,
                Background => HAL.Bitmap.Transparent);
          end if;

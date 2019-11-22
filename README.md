@@ -19,7 +19,7 @@ Ada Drivers Library).
 ## Build Instructions
 
 - Make sure to get all the Git submodules "$ git submodule update --init --recursive"
-- Download and install the 2017 release of GNAT: [GNAT for ARM package](http://libre.adacore.com/download/configurations)
+- Download and install the 2019 release of GNAT: [GNAT for ARM package](https://www.adacore.com/download)
 - Start GPS (GNAT Programing Studio)
 - Open the project file spark_railway_demo_stm32f429disco.gpr
 - Use the "Build all" button to compile
